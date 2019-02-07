@@ -6,3 +6,5 @@
 * processing of data streams 
 
 Developed as final project for "Functional and Streaming Programing in Scala" course at UCU.
+
+GNU GPLv3
