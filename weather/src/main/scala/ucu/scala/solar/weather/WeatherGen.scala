@@ -1,5 +1,4 @@
 package ucu.scala.solar.weather
-
 import java.util.Properties
 import java.util.concurrent.TimeUnit
 
@@ -19,6 +18,8 @@ class WeatherGen(properties: Properties) {
 
 
 object WeatherGen extends App{
+//    println("dsf")
+
     val props: Properties = {
         val p = new Properties()
         p.put(StreamsConfig.APPLICATION_ID_CONFIG, "generator")
