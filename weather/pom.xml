@@ -11,5 +11,12 @@
 
     <artifactId>weather</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>edu.ucu.scala-streaming.solar-plant-dataflow</groupId>
+            <artifactId>common</artifactId>
+            <version>0.1</version>
+        </dependency>
+    </dependencies>
 
 </project>
