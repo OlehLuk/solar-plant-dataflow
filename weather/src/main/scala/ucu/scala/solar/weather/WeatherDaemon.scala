@@ -3,27 +3,19 @@ package ucu.scala.solar.weather
 import java.util.Date
 import java.util.concurrent._
 
-import scala.util.{Failure, Success, Try}
-
 import play.api.libs.json._
-import scalaj.http.{Http, HttpResponse}
+import scalaj.http.Http
+import messageProtocols.WeatherData
 
-
-case class LocationWeather(
-                    name: String,
-                    temperature: Float,
-                    humidity: Int,
-                    pressure: Int
-                  )
-
+import scala.util.{Failure, Success, Try}
 
 object Weather
 {
-  def getWeatherForLocation(location:String): Try[LocationWeather] =
+  def getWeatherForLocation(location:String): Try[WeatherData] =
   {
     val unit = "metric"
     val appID = ""
-    var weatherProviderURL = "https://samples.openweathermap.org/data/2.5/find"
+    val weatherProviderURL = "https://samples.openweathermap.org/data/2.5/find"
 
     val connTimeout = 60 * 1000
     val readTimeout = 60 * 1000
@@ -31,7 +23,8 @@ object Weather
     requestWeather(location, weatherProviderURL, unit, appID, connTimeout, readTimeout)
   }
 
-  def requestWeather(location:String, weatherProviderURL: String, unit: String, appID:String, connTimeout:Int, readTimeout:Int): Try[LocationWeather] =
+  def requestWeather(location:String, weatherProviderURL: String,
+                     unit: String, appID:String, connTimeout:Int, readTimeout:Int): Try[WeatherData] =
   {
     val response = Http(weatherProviderURL)
       .param("q", location)
@@ -52,7 +45,7 @@ object Weather
     }
   }
 
-  def handleWeatherRequest(request: String): LocationWeather = {
+  def handleWeatherRequest(request: String): WeatherData = {
 
     val response_body: JsValue = Json.parse(request)
 
@@ -60,17 +53,25 @@ object Weather
     val temperature = (response_body \ "list" \ 0 \ "main" \ "temp").get.toString().toFloat
     val humidity = (response_body \ "list" \ 0 \ "main" \ "humidity").get.toString().toInt
     val pressure = (response_body \ "list" \ 0 \ "main" \ "pressure").get.toString().toInt
-
-    LocationWeather(
-      name = location,
-      temperature = temperature,
-      humidity = humidity,
-      pressure = pressure
+    val cloudiness = (response_body \ "list" \ 0 \ "clouds" \ "all").get.toString().toInt
+  
+    val now = new Date().getTime
+    new WeatherData(
+      timestamp = now,
+      locationName = location,
+      locationTemperature = temperature,
+      locationHumidity = humidity,
+      locationPressure = pressure,
+      locationCloudiness = cloudiness
     )
   }
 }
 
-
+//TODO: Merge WeatherDaemon and WeatherGen. Result should be able to:
+// * take list of locations' names as input arguments
+// * get weather data for these locations each second/any time period you define
+// * write it to Kafka
+// * run forever
 object WeatherDaemon extends App
 {
     val period = 10
@@ -89,7 +90,7 @@ object WeatherDaemon extends App
   {
     val weather = Weather
 
-    val location = "London"
+    val location = "Lviv"
     val LondonWeather = weather.getWeatherForLocation(location)
 
     LondonWeather match {
