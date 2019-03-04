@@ -17,9 +17,9 @@ class DjData(val panelId: String,
              val locationHumidity: Int,
              val locationPressure: Int,
              val locationCloudiness: Int,
-             val panelVoltage: Float, // for performance monitoring
-             val panelCurrent: Float,  // for performance monitoring
-             val panelTemperature: Float // for predictive maintenance / malfunction mitigation
+             val panelVoltage: Double, // for performance monitoring
+             val panelCurrent: Double,  // for performance monitoring
+             val panelTemperature: Double // for predictive maintenance / malfunction mitigation
         ) {
         
         def this(panel: SolarPanelData, weather: WeatherData) {

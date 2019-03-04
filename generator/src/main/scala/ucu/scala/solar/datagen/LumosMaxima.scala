@@ -8,6 +8,8 @@ import org.apache.kafka.streams.StreamsConfig
 import scala.collection.immutable
 
 object LumosMaxima extends App {
+    //format of config: plant location, plant id, number of panels,
+    // ... timeout between messages in milliseconds
     val plantsConfiguration = List(
         List("London", 1, 3, 1000),
         List("California", 2, 3, 1000),
