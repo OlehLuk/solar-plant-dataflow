@@ -1,70 +1,77 @@
 package ucu.scala.solar.weather
 
-import java.util.Date
+import java.util.{Date, Properties}
 import java.util.concurrent._
 
+import messageProtocols.WeatherData
 import play.api.libs.json._
 import scalaj.http.Http
-import messageProtocols.WeatherData
+import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.streams.StreamsConfig
+import ucu.scala.solar.weather.WeatherModule.moduleConfigs
 
 import scala.util.{Failure, Success, Try}
 
-object Weather
-{
-  def getWeatherForLocation(location:String): Try[WeatherData] =
-  {
-    val unit = "metric"
-    val appID = ""
-    val weatherProviderURL = "https://samples.openweathermap.org/data/2.5/find"
 
-    val connTimeout = 60 * 1000
-    val readTimeout = 60 * 1000
+//Custom imports
+import messageProtocols.WeatherData
+import appConfig._
 
-    requestWeather(location, weatherProviderURL, unit, appID, connTimeout, readTimeout)
-  }
+trait Weather[T] {
+    def getWeatherForLocation(l: String): Try[(String, T)]
+}
 
-  def requestWeather(location:String, weatherProviderURL: String,
-                     unit: String, appID:String, connTimeout:Int, readTimeout:Int): Try[WeatherData] =
-  {
-    val response = Http(weatherProviderURL)
-      .param("q", location)
-      .param("units", unit)
-      .param("appid", appID)
-      .timeout(connTimeout, readTimeout).asString
+case class WeatherDaemon(moduleConfig: WeatherModuleConfig) extends Weather[WeatherData] {
+    def getWeatherForLocation(location: String): Try[(String, WeatherData)] = {
+        val unit = "metric"
+        val appID = moduleConfig.APP_ID
+        val weatherProviderURL = moduleConfig.WEATHER_PROVIDER_URL
 
-    if (response.isSuccess)
-    {
-      Try
-      {
-        handleWeatherRequest(response.body)
-      }
+        val connTimeout = 60 * 1000
+        val readTimeout = 60 * 1000
+
+        requestWeather(location, weatherProviderURL, unit, appID, connTimeout, readTimeout)
     }
-    else
-    {
-      Failure(new Error("Request failed."))
+
+    def requestWeather(location: String, weatherProviderURL: String,
+                       unit: String, appID: String, connTimeout: Int, readTimeout: Int): Try[(String,WeatherData)] = {
+        val response = Http(weatherProviderURL)
+            .param("q", location)
+            .param("units", unit)
+            .param("appid", appID)
+            .timeout(connTimeout, readTimeout).asString
+
+        if (response.isSuccess) {
+            Try {
+                handleWeatherRequest(response.body)
+            }
+        }
+        else {
+            Failure(new Error("Request failed."))
+        }
     }
-  }
 
-  def handleWeatherRequest(request: String): WeatherData = {
+    def handleWeatherRequest(request: String): (String,WeatherData) = {
 
-    val response_body: JsValue = Json.parse(request)
+        val response_body: JsValue = Json.parse(request)
 
-    val location = (response_body \ "list" \ 0 \ "name").get.toString()
-    val temperature = (response_body \ "list" \ 0 \ "main" \ "temp").get.toString().toFloat
-    val humidity = (response_body \ "list" \ 0 \ "main" \ "humidity").get.toString().toInt
-    val pressure = (response_body \ "list" \ 0 \ "main" \ "pressure").get.toString().toInt
-    val cloudiness = (response_body \ "list" \ 0 \ "clouds" \ "all").get.toString().toInt
-  
-    val now = new Date().getTime
-    new WeatherData(
-      timestamp = now,
-      locationName = location,
-      locationTemperature = temperature,
-      locationHumidity = humidity,
-      locationPressure = pressure,
-      locationCloudiness = cloudiness
-    )
-  }
+        val location = (response_body \ "list" \ 0 \ "name").get.toString()
+        val temperature = (response_body \ "list" \ 0 \ "main" \ "temp").get.toString().toFloat
+        val humidity = (response_body \ "list" \ 0 \ "main" \ "humidity").get.toString().toInt
+        val pressure = (response_body \ "list" \ 0 \ "main" \ "pressure").get.toString().toInt
+        val cloudiness = (response_body \ "list" \ 0 \ "clouds" \ "all").get.toString().toInt
+
+        val now = new Date().getTime
+        val result = (location, new WeatherData(
+            timestamp = now,
+            locationName = location,
+            locationTemperature = temperature,
+            locationHumidity = humidity,
+            locationPressure = pressure,
+            locationCloudiness = cloudiness
+        ))
+        result
+    }
 }
 
 //TODO: Merge WeatherDaemon and WeatherGen. Result should be able to:
@@ -72,37 +79,6 @@ object Weather
 // * get weather data for these locations each second/any time period you define
 // * write it to Kafka
 // * run forever
-object WeatherDaemon extends App
-{
-    val period = 10
-    val executor = new ScheduledThreadPoolExecutor(1)
-
-    val task = new Runnable {
-      def run() = {
-        getWeather
-      }
-    }
-
-    val action = executor.scheduleAtFixedRate(task, 1, period, TimeUnit.SECONDS)
-//    action.cancel(false)
-
-  def getWeather =
-  {
-    val weather = Weather
-
-    val location = "Lviv"
-    val LondonWeather = weather.getWeatherForLocation(location)
-
-    LondonWeather match {
-      case Success(n) => println(n)
-      case Failure(e) => println(e)
-    }
-  }
-
-  def getWeather2 = {
-    println("temp")
-  }
-}
 
 //https://stackoverflow.com/questions/11719373/doing-http-request-in-scala
 //https://github.com/scalaj/scalaj-http
