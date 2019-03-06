@@ -1,21 +1,15 @@
 package ucu.scala.solar.weather
 
-import java.util.{Date, Properties}
-import java.util.concurrent._
+import java.util.Date
 
-import messageProtocols.WeatherData
 import play.api.libs.json._
 import scalaj.http.Http
-import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.streams.StreamsConfig
-import ucu.scala.solar.weather.WeatherModule.moduleConfigs
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Try}
 
 
 //Custom imports
 import messageProtocols.WeatherData
-import appConfig._
 
 trait Weather[T] {
     def getWeatherForLocation(l: String): Try[(String, T)]
@@ -55,7 +49,7 @@ case class WeatherDaemon(moduleConfig: WeatherModuleConfig) extends Weather[Weat
 
         val response_body: JsValue = Json.parse(request)
 
-        val location = (response_body \ "list" \ 0 \ "name").get.toString()
+        val location = (response_body \ "list" \ 0 \ "name").get.toString().stripPrefix("\"").stripSuffix("\"")
         val temperature = (response_body \ "list" \ 0 \ "main" \ "temp").get.toString().toFloat
         val humidity = (response_body \ "list" \ 0 \ "main" \ "humidity").get.toString().toInt
         val pressure = (response_body \ "list" \ 0 \ "main" \ "pressure").get.toString().toInt

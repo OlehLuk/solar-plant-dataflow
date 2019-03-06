@@ -33,16 +33,15 @@ class MartinGarrix {
         val sensorData: KStream[String, SolarPanelData] =
             builder.stream[String, SolarPanelData](sensorTopic)
                 .selectKey((_, data) => data.location + ":" + normalizeTimestamp(data.timestamp))
-        val weather: KStream[String, WeatherData] =
+        val weatherStream: KStream[String, WeatherData] =
             builder.stream[String, WeatherData](weatherTopic)
                 .selectKey((_, data) => data.locationName + ":" + normalizeTimestamp(data.timestamp))
         
         
         
-        
-        sensorData.leftJoin(weather)((sensor,weather) => {
+        sensorData.leftJoin(weatherStream)((sensor,weather) => {
             if (weather != null ) {
-                println("join found" + normalizeTimestamp(sensor.timestamp))
+                println("join found: " + normalizeTimestamp(sensor.timestamp))
                 println(new DjData(sensor, weather))
                 new DjData(sensor, weather)
             }

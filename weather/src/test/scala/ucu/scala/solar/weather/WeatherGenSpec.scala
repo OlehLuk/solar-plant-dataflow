@@ -8,7 +8,7 @@ import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.streams.StreamsConfig
 import org.scalatest.{BeforeAndAfterAll, FlatSpec}
 import messageProtocols.WeatherData
-import messageSerdes.{GenericMessageDeserializer, GenericMessageSerializer}
+import messageSerdes.GenericMessageDeserializer
 
 class WeatherGenSpec extends FlatSpec with EmbeddedKafka with BeforeAndAfterAll {
     val topic = "sensors"
@@ -18,8 +18,6 @@ class WeatherGenSpec extends FlatSpec with EmbeddedKafka with BeforeAndAfterAll 
         p.put(StreamsConfig.APPLICATION_ID_CONFIG, "generator")
         p.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
         p.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
-//        p.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
-//        p.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
         p
     }
     
@@ -36,8 +34,6 @@ class WeatherGenSpec extends FlatSpec with EmbeddedKafka with BeforeAndAfterAll 
     it should "publish proper key-value's to kafka" in {
         val producer = new WeatherGen[WeatherData](props)
         val msg = new WeatherData(1, "Alles Gut")
-        println("-----")
-        println(msg)
         producer.produce(topic, List(
             ("Lviv", msg)
         ))

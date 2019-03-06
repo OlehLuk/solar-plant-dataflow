@@ -11,7 +11,7 @@ import org.apache.kafka.common.serialization.StringSerializer
 import org.apache.kafka.streams.{KafkaStreams, StreamsConfig}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec}
 import ucu.scala.solar.datagen.SolarPlantGen
-import ucu.scala.solar.weather.{WeatherDaemon, WeatherGen, WeatherModuleConfig}
+import ucu.scala.solar.weather.{WeatherDaemon, WeatherGen, WeatherModule, WeatherModuleConfig}
 
 class IntegrationTest extends FlatSpec with EmbeddedKafka with BeforeAndAfterAll {
     
@@ -35,8 +35,11 @@ class IntegrationTest extends FlatSpec with EmbeddedKafka with BeforeAndAfterAll
         p
     }
     
-    val moduleConfigs = new WeatherModuleConfig(TOPIC_NAME = weatherTopic,
-        APP_ID="", EXECUTE_PERIOD = 5)
+    val moduleConfigs = new WeatherModuleConfig(
+        TOPIC_NAME = weatherTopic,
+        APP_ID="b6907d289e10d714a6e88b30761fae22",
+        EXECUTE_PERIOD = 5
+    )
     val messageProducer = new WeatherGen[WeatherData](weatherGenProps)
     val wDaemon = new WeatherDaemon(moduleConfigs)
     
@@ -79,35 +82,35 @@ class IntegrationTest extends FlatSpec with EmbeddedKafka with BeforeAndAfterAll
     }
     implicit val weatherDataSerde: GenericMessageSerde[WeatherData] =
         new GenericMessageSerde[WeatherData]
-    val producer = new KafkaProducer[String, WeatherData](manWprops,
-        new StringSerializer, weatherDataSerde.serializer())
+//    val producer = new KafkaProducer[String, WeatherData](manWprops,
+//        new StringSerializer, weatherDataSerde.serializer())
     
     
     //test
     it should "work" in {
         djStreams.start()
         //here i start weather module. and it doesn't join to the sensor stream, gets suspicious data
-        //val wModule = new WeatherModule[WeatherData](moduleConfigs, messageProducer, wDaemon)
+        val wModule = new WeatherModule[WeatherData](moduleConfigs, messageProducer, wDaemon)
         
-        //here i manually write weather. it joins.
-        val now: Long = Calendar.getInstance().getTimeInMillis
-        println("now is " + now)
-        val testWeatherData = List(
-            WeatherData(now+1, "Lviv", 1 , 1, 1, 1),
-            WeatherData(now+5*1000+2, "Lviv", 2,2,2,2),
-            WeatherData(now+5*2*1000+3, "Lviv", 3,3,3,3),
-            WeatherData(now+5*3*1000+4, "Lviv", 4,4,4,4)
-        )
-        
-        for (w<-testWeatherData) {
-            producer.send(new ProducerRecord[String, WeatherData](weatherTopic,
-                "1", w))
-        }
-        
-        
+//        //here i manually write weather. it joins.
+//        val now: Long = Calendar.getInstance().getTimeInMillis
+//        println("now is " + now)
+//        val testWeatherData = List(
+//            WeatherData(now+1, "Lviv", 1 , 1, 1, 1),
+//            WeatherData(now+5*1000+2, "Lviv", 2,2,2,2),
+//            WeatherData(now+5*2*1000+3, "Lviv", 3,3,3,3),
+//            WeatherData(now+5*3*1000+4, "Lviv", 4,4,4,4)
+//        )
+//
+//        for (w<-testWeatherData) {
+//            producer.send(new ProducerRecord[String, WeatherData](weatherTopic,
+//                "1", w))
+//        }
+//
+//
         plantLondon.startPanelsGeneration()
         plantLviv.startPanelsGeneration()
-        
+
         Thread.sleep(15000)
         
         val response = consumeFirstMessageFrom(joinedTopic)(config, djDataDeserializer)
