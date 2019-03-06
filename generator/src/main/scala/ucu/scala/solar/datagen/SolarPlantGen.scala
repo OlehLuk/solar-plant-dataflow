@@ -3,7 +3,9 @@ package ucu.scala.solar.datagen
 import java.util.Properties
 
 import messageProtocols.SolarPanelData
+import messageSerdes.GenericMessageSerializer
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
+import org.apache.kafka.common.serialization.StringSerializer
 
 import scala.collection.immutable
 
@@ -22,13 +24,17 @@ class SolarPlantGen(val location: String,
                 plantId = plantId,
                 panelId = i.toString
             )
-            val producer = new KafkaProducer[String, SolarPanelData](properties)
+            val solarPanelDataSerializer = new GenericMessageSerializer[SolarPanelData]
+            val producer = new KafkaProducer[String, SolarPanelData](properties,
+                new StringSerializer, solarPanelDataSerializer)
             
             while(true) {
                 val data = panel.generateSensorData()
                 
-                producer.send(new ProducerRecord[String, SolarPanelData](topic, data))
-                
+                producer.send(new ProducerRecord[String, SolarPanelData](topic,
+                    location+plantId+i.toString, data))
+                println("MESSAGE PUSHED TO KAFKA")
+                println(data)
                 Thread.sleep(messagePeriod)
             }
             
