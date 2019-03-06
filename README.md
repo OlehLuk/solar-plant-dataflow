@@ -1,4 +1,4 @@
-# solar-plant-dataflow [![Build Status](https://travis-ci.com/OlehLuk/solar-plant-dataflow.svg?branch=master)](https://travis-ci.com/OlehLuk/solar-plant-dataflow)
+# solar-plant-dataflow [![Build Status](https://travis-ci.com/OlehLuk/solar-plant-dataflow.svg?token=wiznHxovdwoge1SZ3KTJ&branch=master)](https://travis-ci.com/OlehLuk/solar-plant-dataflow)
 ### Dataflow management for the simulated solar plant
 
 ### Project consists of:
