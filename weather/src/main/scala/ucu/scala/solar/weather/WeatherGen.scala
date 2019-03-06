@@ -22,8 +22,8 @@ class WeatherGen[T](properties: Properties) {
     def produceSingle(topic: String, message: (String, T)): Unit = {
         println(message._2)
         println("SEND TO KAFKA")
-        val sendFuture: Future[RecordMetadata] =
-            producer.send(new ProducerRecord[String, T](topic, message._1, message._2))
+//        val sendFuture: Future[RecordMetadata] =
+//            producer.send(new ProducerRecord[String, T](topic, message._1, message._2))
     }
 
     def closeProducer(): Unit = {
