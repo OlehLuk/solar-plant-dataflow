@@ -1,17 +1,17 @@
 package ucu.scala.solar.dj
 
-import java.util.Properties
+import java.util.{Calendar, Properties}
 
 import messageProtocols.{DjData, SolarPanelData, WeatherData}
 import messageSerdes.{GenericMessageDeserializer, GenericMessageSerde}
 import net.manub.embeddedkafka.{EmbeddedKafka, EmbeddedKafkaConfig}
 import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import org.apache.kafka.common.serialization.StringSerializer
 import org.apache.kafka.streams.{KafkaStreams, StreamsConfig}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec}
 import ucu.scala.solar.datagen.SolarPlantGen
-import ucu.scala.solar.weather.{WeatherDaemon, WeatherGen, WeatherModule, WeatherModuleConfig}
+import ucu.scala.solar.weather.{WeatherDaemon, WeatherGen, WeatherModuleConfig}
 
 class IntegrationTest extends FlatSpec with EmbeddedKafka with BeforeAndAfterAll {
     
@@ -87,10 +87,10 @@ class IntegrationTest extends FlatSpec with EmbeddedKafka with BeforeAndAfterAll
     it should "work" in {
         djStreams.start()
         //here i start weather module. and it doesn't join to the sensor stream, gets suspicious data
-        val wModule = new WeatherModule[WeatherData](moduleConfigs, messageProducer, wDaemon)
+        //val wModule = new WeatherModule[WeatherData](moduleConfigs, messageProducer, wDaemon)
         
         //here i manually write weather. it joins.
-        /*val now: Long = Calendar.getInstance().getTimeInMillis
+        val now: Long = Calendar.getInstance().getTimeInMillis
         println("now is " + now)
         val testWeatherData = List(
             WeatherData(now+1, "Lviv", 1 , 1, 1, 1),
@@ -102,7 +102,7 @@ class IntegrationTest extends FlatSpec with EmbeddedKafka with BeforeAndAfterAll
         for (w<-testWeatherData) {
             producer.send(new ProducerRecord[String, WeatherData](weatherTopic,
                 "1", w))
-        }*/
+        }
         
         
         plantLondon.startPanelsGeneration()
