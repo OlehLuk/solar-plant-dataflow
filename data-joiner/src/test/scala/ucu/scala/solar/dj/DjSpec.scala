@@ -16,7 +16,7 @@ class DjSpec extends FlatSpec{
         new StringSerializer, new StringSerializer)
     val testClass = new DJ()
     
-    it should "convert each line of text to the length of that text" in {
+    it should "join streams properly" in {
         // When
         val testDriver = new TopologyTestDriver(testClass.jam(), config)
         testSensorData.foreach(entry => testDriver.pipeInput(

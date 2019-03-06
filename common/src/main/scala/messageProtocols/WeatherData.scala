@@ -13,7 +13,7 @@ case class WeatherData(
                           locationCloudiness: Int = 0,
                       ) {
     //just for better testing/logging. Could be removed or refactored
-    override def toString: String = timestamp + " " + locationName
+    //override def toString: String = timestamp + " " + locationName
 
     override def equals(obj: Any): Boolean = obj match {
         case obj: WeatherData =>

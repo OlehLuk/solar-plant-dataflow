@@ -30,7 +30,8 @@ class WeatherModule[T](config: WeatherModuleConfig,
 
         val weatherResp: Try[(String,T)] = wDaemon.getWeatherForLocation(location)
         weatherResp match {
-            case Success((k: String, wData:T)) => messageProducer.produceSingle(config.TOPIC_NAME, (k, wData))
+            case Success((k: String, wData:T)) =>
+                messageProducer.produceSingle(config.TOPIC_NAME, (k, wData))
             case Failure(e) => println(e)
         }
     }

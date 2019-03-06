@@ -1,14 +1,9 @@
 package ucu.scala.solar.weather
-import java.io.{ByteArrayOutputStream, ObjectOutputStream}
 import java.util.Properties
 import java.util.concurrent.{Future, TimeUnit}
-import java.{util => j_util}
 
-import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.clients.producer._
-import org.apache.kafka.streams.StreamsConfig
-import messageProtocols.WeatherData
 import messageSerdes.GenericMessageSerializer
+import org.apache.kafka.clients.producer._
 import org.apache.kafka.common.serialization.StringSerializer
 
 class WeatherGen[T](properties: Properties) {
@@ -25,9 +20,10 @@ class WeatherGen[T](properties: Properties) {
     }
 
     def produceSingle(topic: String, message: (String, T)): Unit = {
-        println(message)
+        println(message._2)
         println("SEND TO KAFKA")
-        val sendFuture: Future[RecordMetadata] = producer.send(new ProducerRecord[String, T](topic, message._1, message._2))
+        val sendFuture: Future[RecordMetadata] =
+            producer.send(new ProducerRecord[String, T](topic, message._1, message._2))
     }
 
     def closeProducer(): Unit = {

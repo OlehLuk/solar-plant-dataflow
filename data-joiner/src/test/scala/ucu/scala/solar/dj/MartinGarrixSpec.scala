@@ -11,6 +11,9 @@ import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.scalatest.FlatSpec
 
 class MartinGarrixSpec extends FlatSpec{
+    val sensorTopic = "sensors"
+    val weatherTopic = "weather"
+    val joinedTopic = "mash-up"
     
     implicit val solarPanelDataSerde: GenericMessageSerde[SolarPanelData] =
         new GenericMessageSerde[SolarPanelData]
@@ -19,16 +22,17 @@ class MartinGarrixSpec extends FlatSpec{
     implicit val djDataSerde: GenericMessageSerde[DjData] =
         new GenericMessageSerde[DjData]
     
-    val factorySensorData = new ConsumerRecordFactory[String, SolarPanelData]("sensors-4",
+    val factorySensorData = new ConsumerRecordFactory[String, SolarPanelData](sensorTopic,
         new StringSerializer, solarPanelDataSerde.serializer())
-    val factoryWeather = new ConsumerRecordFactory[String, WeatherData]("weather-4",
+    val factoryWeather = new ConsumerRecordFactory[String, WeatherData](weatherTopic,
         new StringSerializer, weatherDataSerde.serializer())
     
     val testClass = new MartinGarrix()
     
     it should "join messages properly in synchronous mode" in {
         // When
-        val testDriver = new TopologyTestDriver(testClass.jam(), config)
+        val testDriver = new TopologyTestDriver(
+            testClass.jam(weatherTopic, sensorTopic, joinedTopic, 10), config)
         
         
         testWeatherData.foreach(entry => testDriver.pipeInput(
@@ -45,7 +49,7 @@ class MartinGarrixSpec extends FlatSpec{
         
         
         def assertValue(expected: Int, joined: Boolean): Unit = {
-            val received = testDriver.readOutput("mash-up-4",
+            val received = testDriver.readOutput(joinedTopic,
                 new StringDeserializer, djDataSerde.deserializer()).value()
             println(received)
             if (joined) {
@@ -71,17 +75,17 @@ class MartinGarrixSpec extends FlatSpec{
     val now: Long = 100*1000//Calendar.getInstance().getTimeInMillis
     
     val testSensorData = List(
-        SolarPanelData(now, "Lviv", "1", "1", 1, 1, 1),
-        SolarPanelData(now-10*1000, "Lviv", "1", "1", 2, 2, 2),
-        SolarPanelData(now-15*1000, "Lviv", "1", "1", 3, 3, 3),
-        SolarPanelData(now-20*1000, "Lviv", "1", "1", 3, 3, 3),
-        SolarPanelData(now-40*1000, "Lviv", "1", "1", 5, 5, 5),
+        SolarPanelData(now+1, "Lviv", "1", "1", 1, 1, 1),
+        SolarPanelData(now-10*1000+2, "Lviv", "1", "1", 2, 2, 2),
+        SolarPanelData(now-15*1000+3, "Lviv", "1", "1", 3, 3, 3),
+        SolarPanelData(now-20*1000+4, "Lviv", "1", "1", 3, 3, 3),
+        SolarPanelData(now-40*1000+5, "Lviv", "1", "1", 5, 5, 5),
         
     )
     val testWeatherData = List(
-        WeatherData(now, "Lviv", 1 , 1, 1, 1),
-        WeatherData(now-10*1000, "Lviv", 2,2,2,2),
-        WeatherData(now-20*1000, "Lviv", 3,3,3,3),
-        WeatherData(now-30*1000, "Lviv", 4,4,4,4)
+        WeatherData(now+1, "Lviv", 1 , 1, 1, 1),
+        WeatherData(now-10*1000+2, "Lviv", 2,2,2,2),
+        WeatherData(now-20*1000+3, "Lviv", 3,3,3,3),
+        WeatherData(now-30*1000+4, "Lviv", 4,4,4,4)
     )
 }
