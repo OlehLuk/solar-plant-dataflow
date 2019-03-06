@@ -50,7 +50,7 @@ class MartinGarrix {
             }
         }
             ,
-            JoinWindows.of(TimeUnit.MINUTES.toMillis(1))).to("mash-up-4")
+            JoinWindows.of(TimeUnit.MINUTES.toMillis(5))).to("mash-up-4")
         
         builder.build()
     }

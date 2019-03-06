@@ -62,7 +62,7 @@ class MartinGarrixSpec extends FlatSpec{
     
     val config: Properties = {
         val p = new Properties()
-        p.put(StreamsConfig.APPLICATION_ID_CONFIG, "test-dj-app")
+        p.put(StreamsConfig.APPLICATION_ID_CONFIG, "test-bestdj-app")
         p.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234")
         p.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
         p
