@@ -2,15 +2,17 @@ package ucu.scala.solar.weather
 
 import java.util.Properties
 
+import common.MessageProducer
+import messageProtocols.WeatherData
+import messageSerdes.GenericMessageDeserializer
+
 import net.manub.embeddedkafka.{EmbeddedKafka, EmbeddedKafkaConfig}
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.streams.StreamsConfig
 import org.scalatest.{BeforeAndAfterAll, FlatSpec}
-import messageProtocols.WeatherData
-import messageSerdes.GenericMessageDeserializer
 
-class WeatherGenSpec extends FlatSpec with EmbeddedKafka with BeforeAndAfterAll {
+class MessageProducerSpec extends FlatSpec with EmbeddedKafka with BeforeAndAfterAll {
     val topic = "sensors"
     val weatherDataDeserializer = new GenericMessageDeserializer[WeatherData]()
     val props: Properties = {
@@ -25,14 +27,14 @@ class WeatherGenSpec extends FlatSpec with EmbeddedKafka with BeforeAndAfterAll 
         EmbeddedKafkaConfig(kafkaPort = 9092, zooKeeperPort = 2182)
     
     it should "publish synchronously data to kafka" in {
-        val producer = new WeatherGen[WeatherData](props)
+        val producer = new MessageProducer[WeatherData](props)
         producer.produce(topic, List(("KEY",new WeatherData(1,"THIS IS MESSAGE"))))
         val response = consumeFirstStringMessageFrom(topic)
         assert(Some(response).isDefined)
     }
     
     it should "publish proper key-value's to kafka" in {
-        val producer = new WeatherGen[WeatherData](props)
+        val producer = new MessageProducer[WeatherData](props)
         val msg = new WeatherData(1, "Alles Gut")
         producer.produce(topic, List(
             ("Lviv", msg)

@@ -1,17 +1,16 @@
 package ucu.scala.solar.dj
 
-import java.util.{Calendar, Properties}
+import java.util.Properties
 
+import common.MessageProducer
 import messageProtocols.{DjData, SolarPanelData, WeatherData}
 import messageSerdes.{GenericMessageDeserializer, GenericMessageSerde}
 import net.manub.embeddedkafka.{EmbeddedKafka, EmbeddedKafkaConfig}
 import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
-import org.apache.kafka.common.serialization.StringSerializer
 import org.apache.kafka.streams.{KafkaStreams, StreamsConfig}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec}
 import ucu.scala.solar.datagen.SolarPlantGen
-import ucu.scala.solar.weather.{WeatherDaemon, WeatherGen, WeatherModule, WeatherModuleConfig}
+import ucu.scala.solar.weather.{WeatherDaemon, WeatherModule, WeatherModuleConfig}
 
 class IntegrationTest extends FlatSpec with EmbeddedKafka with BeforeAndAfterAll {
     
@@ -40,7 +39,7 @@ class IntegrationTest extends FlatSpec with EmbeddedKafka with BeforeAndAfterAll
         APP_ID="b6907d289e10d714a6e88b30761fae22",
         EXECUTE_PERIOD = 5
     )
-    val messageProducer = new WeatherGen[WeatherData](weatherGenProps)
+    val messageProducer = new MessageProducer[WeatherData](weatherGenProps)
     val wDaemon = new WeatherDaemon(moduleConfigs)
     
     

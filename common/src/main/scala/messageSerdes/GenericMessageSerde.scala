@@ -40,7 +40,7 @@ class GenericMessageDeserializer[T] extends Deserializer[T] {
   override def close(): Unit = {}
 }
 
-class GenericMessageSerde[T]  extends Serde[T] {
+class GenericMessageSerde[T] extends Serde[T] {
   override def configure(map: j_util.Map[String, _], b: Boolean): Unit = {}
 
   override def close(): Unit = {}

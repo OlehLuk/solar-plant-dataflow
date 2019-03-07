@@ -1,4 +1,5 @@
-package ucu.scala.solar.weather
+package common
+
 import java.util.Properties
 import java.util.concurrent.{Future, TimeUnit}
 
@@ -6,9 +7,9 @@ import messageSerdes.GenericMessageSerializer
 import org.apache.kafka.clients.producer._
 import org.apache.kafka.common.serialization.StringSerializer
 
-class WeatherGen[T](properties: Properties) {
-    val weatherDataSerializer = new GenericMessageSerializer[T]()
-    val producer = new KafkaProducer[String, T](properties, new StringSerializer(), weatherDataSerializer)
+class MessageProducer[T](properties: Properties) {
+    val messageSerializer = new GenericMessageSerializer[T]()
+    val producer = new KafkaProducer[String, T](properties, new StringSerializer(), messageSerializer)
 
     def produce(topic: String, messages: List[(String, T)]): Unit = {
         messages.foreach { m =>

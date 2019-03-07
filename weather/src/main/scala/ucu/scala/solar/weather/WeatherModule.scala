@@ -4,14 +4,16 @@ import java.util.Properties
 import java.util.concurrent.{ScheduledThreadPoolExecutor, TimeUnit}
 
 import appConfig._
+import common.MessageProducer
 import messageProtocols.WeatherData
+
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.streams.StreamsConfig
 
 import scala.util.{Failure, Success, Try}
 
 class WeatherModule[T](config: WeatherModuleConfig,
-                       messageProducer: WeatherGen[T],
+                       messageProducer: MessageProducer[T],
                        wDaemon: Weather[T]
                       ) {
 
@@ -40,16 +42,16 @@ class WeatherModule[T](config: WeatherModuleConfig,
 
 object WeatherModule extends App {
     val moduleConfigs = new WeatherModuleConfig()
+    val wDaemon = new WeatherDaemon(moduleConfigs)
 
-    val weatherGenProps = {
+    val messageProducerProps = {
         val p = new Properties()
         p.put(StreamsConfig.APPLICATION_ID_CONFIG, "generator")
         p.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
         p.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
         p
     }
+    val messageProducer = new MessageProducer[WeatherData](messageProducerProps)
 
-    val messageProducer = new WeatherGen[WeatherData](weatherGenProps)
-    val wDaemon = new WeatherDaemon(moduleConfigs)
     val wModule = new WeatherModule[WeatherData](moduleConfigs, messageProducer, wDaemon)
 }
