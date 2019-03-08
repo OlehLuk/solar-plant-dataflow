@@ -7,13 +7,13 @@ import messageSerdes.GenericMessageSerde
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.JoinWindows
 import org.apache.kafka.streams.scala.ImplicitConversions._
+import org.apache.kafka.streams.scala.Serdes._
 import org.apache.kafka.streams.scala._
 import org.apache.kafka.streams.scala.kstream._
 
 class MartinGarrix {
     def jam(weatherTopic: String, sensorTopic: String, resultTopic: String,
             weatherUpdatePeriod: Int): Topology = {
-        import org.apache.kafka.streams.scala.Serdes._
         
         val builder: StreamsBuilder = new StreamsBuilder
         

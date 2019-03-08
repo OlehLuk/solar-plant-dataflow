@@ -67,18 +67,3 @@ case class WeatherDaemon(moduleConfig: WeatherModuleConfig) extends Weather[Weat
         result
     }
 }
-
-//TODO: Merge WeatherDaemon and WeatherGen. Result should be able to:
-// * take list of locations' names as input arguments
-// * get weather data for these locations each second/any time period you define
-// * write it to Kafka
-// * run forever
-
-//https://stackoverflow.com/questions/11719373/doing-http-request-in-scala
-//https://github.com/scalaj/scalaj-http
-//https://openweathermap.org/current
-//https://www.programcreek.com/scala/scalaj.http.Http
-//https://www.playframework.com/documentation/2.0/ScalaJson
-//https://darksky.net/dev/docs/libraries#python-library
-//https://rapidapi.com/weatherbit/api/weather
-//https://www.wunderground.com/member/favorites
