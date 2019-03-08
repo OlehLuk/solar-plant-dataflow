@@ -54,9 +54,9 @@ DJ module functionality of merging streams can be scaled as any other Kafka appl
 
 ### Testing
 Implementation of  modules’ features are covered with unit tests including usage of EmbeddedKafka.
-In DJ module `IntegrationTest.scala` can be found. It implements integration tests for the whole pipeline. This can be used both to check that modules run at all and that modules work properly. Messages posted to Kafka are copied in the stdout, so you can check what it is posting. In particular, results of join are outputted as well. So, it’s easy to check if joining is working. 
+In DJ module [IntegrationTest.scala](https://github.com/OlehLuk/solar-plant-dataflow/blob/master/data-joiner/src/test/scala/ucu/scala/solar/dj/IntegrationTest.scala) can be found. It implements integration tests for the whole pipeline. This can be used both to check that modules run at all and that modules work properly. Messages posted to Kafka are copied in the stdout, so you can check what it is posting. In particular, results of join are outputted as well. So, it’s easy to check if joining is working. 
 However, if you want to run project parts the easiest way is to pack jars for each module and run it with the required configuration. 
 Entry points for module programs are 
-1. WeatherModule.scala for weather;
-2. GeneratorModule.scala for data generator;
-3. DjModule.scala for data joiner.
+1. [WeatherModule.scala](https://github.com/OlehLuk/solar-plant-dataflow/blob/master/weather/src/main/scala/ucu/scala/solar/weather/WeatherModule.scala) for weather;
+2. [GeneratorModule.scala](https://github.com/OlehLuk/solar-plant-dataflow/blob/master/generator/src/main/scala/ucu/scala/solar/datagen/GeneratorModule.scala) for data generator;
+3. [DjModule.scala](https://github.com/OlehLuk/solar-plant-dataflow/blob/master/data-joiner/src/main/scala/ucu/scala/solar/dj/DjModule.scala) for data joiner.
