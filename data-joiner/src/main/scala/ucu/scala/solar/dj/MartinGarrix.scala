@@ -46,8 +46,6 @@ class MartinGarrix {
                 new DjData(sensor, weather)
             }
             else {
-                println("join not found - "+sensor.location +" - " + sensor.timestamp)
-                println(new DjData(sensor))
                 new DjData(sensor)
             }
         }
