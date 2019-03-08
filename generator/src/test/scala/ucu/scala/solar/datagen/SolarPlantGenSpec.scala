@@ -16,8 +16,6 @@ class SolarPlantGenSpec extends FlatSpec with EmbeddedKafka with BeforeAndAfterA
         p.put(StreamsConfig.APPLICATION_ID_CONFIG, "generator")
         p.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
         p.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
-        //p.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
-        //p.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
         p
     }
     val solarPanelDataDeserializer = new GenericMessageDeserializer[SolarPanelData]
