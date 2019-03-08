@@ -1,0 +1,6 @@
+weather,
+sensors,
+mash-up,
+5,
+weather-sensor-join,
+localhost:9092

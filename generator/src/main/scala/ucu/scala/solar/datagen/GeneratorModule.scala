@@ -2,18 +2,19 @@ package ucu.scala.solar.datagen
 
 import java.util.Properties
 
+import common.{ConfigReader, Read}
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.streams.StreamsConfig
 
 import scala.collection.immutable
 
 class GeneratorModule(val config: GeneratorModuleConfig) {
-    val plantsConfiguration = List(
-        List("London", 1, 3, 1000),
-        List("California", 2, 3, 1000),
-        List("Lviv", 3, 3, 1000),
-        List("London", 4, 3, 1000)
-    )
+//    val plantsConfiguration = List(
+//        ("London", 1, 3, 1000),
+//        ("California", 2, 3, 1000),
+//        ("Lviv", 3, 3, 1000),
+//        ("London", 4, 3, 1000)
+//    )
     
     val props: Properties = {
         val p = new Properties()
@@ -25,11 +26,11 @@ class GeneratorModule(val config: GeneratorModuleConfig) {
     
     val topic = "sensorData"
     
-    val plants: immutable.Seq[SolarPlantGen] = for(plantConfig <- plantsConfiguration) yield {
-        new SolarPlantGen(plantConfig(0).asInstanceOf[String],
-            plantConfig(1).asInstanceOf[String],
-            plantConfig(2).asInstanceOf[Int],
-            plantConfig(3).asInstanceOf[Long],
+    val plants: immutable.Seq[SolarPlantGen] = for(plantConfig <- config.plantsConfig) yield {
+        new SolarPlantGen(plantConfig.locationName,
+            plantConfig.plantId,
+            plantConfig.panelNumber,
+            plantConfig.messagePeriod,
             props, config.sensorTopic)
     }
     
@@ -41,7 +42,22 @@ class GeneratorModule(val config: GeneratorModuleConfig) {
 }
 
 object GeneratorModule extends App {
-    val config = new GeneratorModuleConfig()
-    val module = new GeneratorModule(config)
+    val filepath: String = args(0)
+
+    implicit object ReadGeneratorConfig extends Read[GeneratorModuleConfig] {
+        def read(argsAsStr: Array[String]): GeneratorModuleConfig = {
+            val topicName = argsAsStr(0).stripSuffix(",")
+            val appName = argsAsStr(1).stripSuffix(",")
+            val kafkaEndPoint = argsAsStr(2).stripSuffix(",")
+            val nPlants = argsAsStr(3).stripSuffix(",")
+            val plantsConfigs = for (i <- 0 until nPlants.toInt) yield {
+                val Array(location, plantId, panelNumber, messagePeriod) = argsAsStr(4 + i).split(",").map(_.trim)
+                PlantConfig(location, plantId, panelNumber.toInt, messagePeriod.toLong)
+            }
+            new GeneratorModuleConfig(topicName, appName, kafkaEndPoint, plantsConfigs.toList)
+        }
+    }
+    val moduleConfigs: GeneratorModuleConfig = ConfigReader[GeneratorModuleConfig](filepath)
+    val module = new GeneratorModule(moduleConfigs)
     module.start()
 }

@@ -1,0 +1,8 @@
+sensors,
+sensor-generation,
+localhost:9092,
+4,
+London, 1, 3, 1000,
+California, 2, 3, 1000,
+Lviv, 3, 3, 1000,
+London, 4, 3, 1000,

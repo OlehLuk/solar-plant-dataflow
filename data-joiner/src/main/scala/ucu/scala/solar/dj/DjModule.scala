@@ -27,13 +27,11 @@ object DjModule extends App {
     implicit object ReadDJConfigs extends Read[DjModuleConfig] {
         def read(argsAsStr: Array[String]): DjModuleConfig = {
             println(argsAsStr)
-            val Array(wTopic, sTopic, jTopic, updPeriod, appName, kafkaEndPoint) = argsAsStr
+            val Array(wTopic, sTopic, jTopic, updPeriod, appName, kafkaEndPoint) = argsAsStr.map(_.split(",")(0))
             new DjModuleConfig(wTopic, sTopic, jTopic, updPeriod.toInt, appName, kafkaEndPoint)
         }
     }
     val moduleConfigs: DjModuleConfig = ConfigReader[DjModuleConfig](filepath)
-    
-//    val djModuleConfig = DjModuleConfig()
     
     val streamJoiner = new DjModule(moduleConfigs)
     streamJoiner.start()

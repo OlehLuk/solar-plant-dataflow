@@ -45,16 +45,12 @@ object WeatherModule extends App {
     implicit object ReadWeatherModuleConfig extends Read[WeatherModuleConfig] {
         def read(argsAsStr: Array[String]): WeatherModuleConfig = {
             println(argsAsStr)
-            val Array(topicName, reqUrl, appId, exPeriod, appName, kafkaEndPoint) = argsAsStr
+            val Array(topicName, reqUrl, appId, exPeriod, appName, kafkaEndPoint) = argsAsStr.map(_.split(",")(0))
             new WeatherModuleConfig(topicName, reqUrl, appId, exPeriod.toInt, appName, kafkaEndPoint)
         }
     }
     val moduleConfigs: WeatherModuleConfig = ConfigReader[WeatherModuleConfig](filepath)
 
-//    println(readedConfigs)
-//    println("-------------")
-
-//    val moduleConfigs = new WeatherModuleConfig()
     val wDaemon = new WeatherDaemon(moduleConfigs)
     val messageProducerProps = {
         val p = new Properties()
