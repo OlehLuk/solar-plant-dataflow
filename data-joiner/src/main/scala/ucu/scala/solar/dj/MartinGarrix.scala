@@ -24,8 +24,6 @@ class MartinGarrix {
         implicit val djDataSerde: GenericMessageSerde[DjData] =
             new GenericMessageSerde[DjData]
         
-        //val weatherUpdatePeriod = 10 //seconds
-        
         def normalizeTimestamp(t: Long): Long =
             t - (t % (weatherUpdatePeriod*1000))
         
@@ -46,8 +44,6 @@ class MartinGarrix {
                 new DjData(sensor, weather)
             }
             else {
-                println("join not found - "+sensor.location +" - " + sensor.timestamp)
-                println(new DjData(sensor))
                 new DjData(sensor)
             }
         }
