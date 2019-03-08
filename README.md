@@ -60,3 +60,10 @@ Entry points for module programs are
 1. [WeatherModule.scala](https://github.com/OlehLuk/solar-plant-dataflow/blob/master/weather/src/main/scala/ucu/scala/solar/weather/WeatherModule.scala) for weather;
 2. [GeneratorModule.scala](https://github.com/OlehLuk/solar-plant-dataflow/blob/master/generator/src/main/scala/ucu/scala/solar/datagen/GeneratorModule.scala) for data generator;
 3. [DjModule.scala](https://github.com/OlehLuk/solar-plant-dataflow/blob/master/data-joiner/src/main/scala/ucu/scala/solar/dj/DjModule.scala) for data joiner.
+
+### How to run via terminal
+All three modules can be configured by `.csv` file. To run them with such configs - run corresponding module and pass full path to file as first argument.
+Examples of such files with default configs can be found in folders with related class. For all of them configs must be listed in strict order and one param per line:
+1. Params order for `WeatherModule`: TOPIC_NAME, WEATHER_PROVIDER_URL, APP_ID, EXECUTE_PERIOD, APP_NAME, KAFKA_ENDPOINT;
+2. for `DjModule`: weatherTopic, sensorTopic, joinedTopic, weatherUpdatePeriod, appName, kafkaEndpoint;
+3. for `GeneratorModule`: sensorTopic, appName, kafkaEndpoint, `number_of_plants`. After that each line stand for config for each plant: `locationName, plantId, panelNumber, messagePeriod`
