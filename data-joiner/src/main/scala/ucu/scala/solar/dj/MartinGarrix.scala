@@ -24,8 +24,6 @@ class MartinGarrix {
         implicit val djDataSerde: GenericMessageSerde[DjData] =
             new GenericMessageSerde[DjData]
         
-        //val weatherUpdatePeriod = 10 //seconds
-        
         def normalizeTimestamp(t: Long): Long =
             t - (t % (weatherUpdatePeriod*1000))
         
