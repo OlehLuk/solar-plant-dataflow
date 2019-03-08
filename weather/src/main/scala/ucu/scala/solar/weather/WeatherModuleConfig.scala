@@ -6,4 +6,6 @@ class WeatherModuleConfig(
                              val APP_ID: String = "b6907d289e10d714a6e88b30761fae22",
                              val EXECUTE_PERIOD: Int = 10
 
-                         ) {}
+                         ) {
+    override def toString: String = TOPIC_NAME +","+ WEATHER_PROVIDER_URL  +","+ APP_ID  +","+ EXECUTE_PERIOD
+}

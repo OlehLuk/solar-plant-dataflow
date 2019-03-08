@@ -4,9 +4,8 @@ import java.util.Properties
 import java.util.concurrent.{ScheduledThreadPoolExecutor, TimeUnit}
 
 import appConfig._
-import common.MessageProducer
+import common.{ConfigReader, MessageProducer, Read}
 import messageProtocols.WeatherData
-
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.streams.StreamsConfig
 
@@ -41,9 +40,21 @@ class WeatherModule[T](config: WeatherModuleConfig,
 
 
 object WeatherModule extends App {
+    val filepath: String = args(0)
+
+    implicit object ReadPerson extends Read[WeatherModuleConfig] {
+        def read(argsAsStr: Array[String]): WeatherModuleConfig = {
+            val Array(topicName,reqUrl,appId,exPeriod) = argsAsStr
+            new WeatherModuleConfig(topicName,reqUrl,appId,exPeriod.toInt)
+        }
+    }
+    val readedConfigs: WeatherModuleConfig = ConfigReader[WeatherModuleConfig](filepath)
+
+//    println(readedConfigs)
+//    println("-------------")
+
     val moduleConfigs = new WeatherModuleConfig()
     val wDaemon = new WeatherDaemon(moduleConfigs)
-
     val messageProducerProps = {
         val p = new Properties()
         p.put(StreamsConfig.APPLICATION_ID_CONFIG, "generator")
