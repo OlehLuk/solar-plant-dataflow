@@ -26,7 +26,6 @@ object DjModule extends App {
 
     implicit object ReadDJConfigs extends Read[DjModuleConfig] {
         def read(argsAsStr: Array[String]): DjModuleConfig = {
-            println(argsAsStr)
             val Array(wTopic, sTopic, jTopic, updPeriod, appName, kafkaEndPoint) = argsAsStr.map(_.split(",")(0))
             new DjModuleConfig(wTopic, sTopic, jTopic, updPeriod.toInt, appName, kafkaEndPoint)
         }

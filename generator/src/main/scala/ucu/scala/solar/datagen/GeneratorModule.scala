@@ -9,12 +9,6 @@ import org.apache.kafka.streams.StreamsConfig
 import scala.collection.immutable
 
 class GeneratorModule(val config: GeneratorModuleConfig) {
-//    val plantsConfiguration = List(
-//        ("London", 1, 3, 1000),
-//        ("California", 2, 3, 1000),
-//        ("Lviv", 3, 3, 1000),
-//        ("London", 4, 3, 1000)
-//    )
     
     val props: Properties = {
         val p = new Properties()
