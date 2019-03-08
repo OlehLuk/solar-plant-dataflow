@@ -42,11 +42,11 @@ class WeatherModule[T](config: WeatherModuleConfig,
 object WeatherModule extends App {
     val filepath: String = args(0)
 
-    implicit object ReadPerson extends Read[WeatherModuleConfig] {
+    implicit object ReadWeatherModuleConfig extends Read[WeatherModuleConfig] {
         def read(argsAsStr: Array[String]): WeatherModuleConfig = {
             println(argsAsStr)
-            val Array(topicName,reqUrl,appId,exPeriod, appName, kafkaEndPoint) = argsAsStr
-            new WeatherModuleConfig(topicName,reqUrl,appId,exPeriod.toInt, appName, kafkaEndPoint)
+            val Array(topicName, reqUrl, appId, exPeriod, appName, kafkaEndPoint) = argsAsStr
+            new WeatherModuleConfig(topicName, reqUrl, appId, exPeriod.toInt, appName, kafkaEndPoint)
         }
     }
     val moduleConfigs: WeatherModuleConfig = ConfigReader[WeatherModuleConfig](filepath)

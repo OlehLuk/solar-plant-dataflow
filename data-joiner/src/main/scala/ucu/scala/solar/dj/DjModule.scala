@@ -2,6 +2,7 @@ package ucu.scala.solar.dj
 
 import java.util.Properties
 
+import common.{ConfigReader, Read}
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.streams.{KafkaStreams, StreamsConfig}
 
@@ -21,10 +22,19 @@ class DjModule(djModuleConfig: DjModuleConfig) {
 }
 
 object DjModule extends App {
+    val filepath: String = args(0)
+
+    implicit object ReadDJConfigs extends Read[DjModuleConfig] {
+        def read(argsAsStr: Array[String]): DjModuleConfig = {
+            println(argsAsStr)
+            val Array(wTopic, sTopic, jTopic, updPeriod, appName, kafkaEndPoint) = argsAsStr
+            new DjModuleConfig(wTopic, sTopic, jTopic, updPeriod.toInt, appName, kafkaEndPoint)
+        }
+    }
+    val moduleConfigs: DjModuleConfig = ConfigReader[DjModuleConfig](filepath)
     
+//    val djModuleConfig = DjModuleConfig()
     
-    val djModuleConfig = DjModuleConfig()
-    
-    val streamJoiner = new DjModule(djModuleConfig)
+    val streamJoiner = new DjModule(moduleConfigs)
     streamJoiner.start()
 }
