@@ -57,8 +57,8 @@ object WeatherModule extends App {
     val wDaemon = new WeatherDaemon(moduleConfigs)
     val messageProducerProps = {
         val p = new Properties()
-        p.put(StreamsConfig.APPLICATION_ID_CONFIG, "generator")
-        p.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
+        p.put(StreamsConfig.APPLICATION_ID_CONFIG, moduleConfigs.APP_NAME)
+        p.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, moduleConfigs.KAFKA_ENDPOINT)
         p.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
         p
     }
